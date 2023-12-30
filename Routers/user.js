@@ -7,6 +7,8 @@ const { UserModel } = require("../Model/user.model");
 const fs=require("fs")
 const multer=require("multer");
 const { s3 } = require("../config/S3_Config");
+const { Auth } = require("../Middleware/auth");
+const { RoleBase } = require("../Middleware/RoleBase");
 require("dotenv").config()
 
 const UserRouter=express.Router()
@@ -89,13 +91,21 @@ UserRouter.post("/Login", async(req,res)=>{
             return res.status(400).send("You need to provide password");
         }
 
-        const UserPresent= await UserModel.findOne({$or:[{email},{phoneNumber}]})
+        let query = {};
+        if (email) {
+            query.email = email;
+        } else {
+            query.phoneNumber = phoneNumber;
+        }
+
+        const UserPresent= await UserModel.findOne(query)
+        // UserModel.findOne({ $or: [{ email }, { phoneNumber }] });
         if(UserPresent){
             bcrypt.compare(password,UserPresent.password,(err,result)=>{
                 if(result){
-                    const Token= jwt.sign({"userID":UserPresent._id,"role":UserPresent.Role},process.env.JWT_Secret,{expiresIn:"3h"})
+                    const Token= jwt.sign({"userID":UserPresent._id,Role:UserPresent.Role},process.env.JWT_Secret,{expiresIn:"3h"})
 
-                    return res.status(201).send({ "msg": "login succesfully","name":UserPresent.name,UserPresent, "token": Token,"role":UserPresent.Role})
+                    return res.status(201).send({ "msg": "login succesfully","name":UserPresent.name,UserPresent, "token": Token,"Role":UserPresent.Role})
                 }else{
                     return res.status(400).send("password not matched")
                 }
@@ -116,7 +126,7 @@ UserRouter.post("/Login", async(req,res)=>{
 })
 
 
-UserRouter.put("/update/:id",uploadFun.single("Image"), async(req,res)=>{
+UserRouter.put("/update/:id",Auth,RoleBase(["Admin", "User"]), uploadFun.single("Image"), async(req,res)=>{
     const {id}=req.params
     const {name}=req.body
     try {
@@ -160,7 +170,7 @@ UserRouter.put("/update/:id",uploadFun.single("Image"), async(req,res)=>{
 
 })
 
-UserRouter.delete("/delete/:id",async(req,res)=>{
+UserRouter.delete("/delete/:id",Auth,RoleBase(["Admin", "User"]), async(req,res)=>{
     const {id}=req.params
     try {
         let UserData= await UserModel.findById(id)
@@ -186,7 +196,7 @@ UserRouter.delete("/delete/:id",async(req,res)=>{
     }
 })
 
-UserRouter.get("/All-Users",async(req,res)=>{
+UserRouter.get("/All-Users",Auth,RoleBase(["Admin"]), async(req,res)=>{
     try {
         const UserData= await UserModel.find()
         if(UserData.length==0){
@@ -198,7 +208,7 @@ UserRouter.get("/All-Users",async(req,res)=>{
     }
 })
 
-UserRouter.get("/Specific-User/:id",async(req,res)=>{
+UserRouter.get("/Specific-User/:id",Auth,RoleBase(["Admin", "User"]), async(req,res)=>{
     const {id}=req.params
     try {
         const UserData= await UserModel.findOne({_id:id})
