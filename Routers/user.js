@@ -126,7 +126,7 @@ UserRouter.post("/Login", async(req,res)=>{
 })
 
 
-UserRouter.put("/update/:id",Auth,RoleBase(["Admin", "User"]), uploadFun.single("Image"), async(req,res)=>{
+UserRouter.put("/Update/:id",Auth,RoleBase(["Admin", "User"]), uploadFun.single("Image"), async(req,res)=>{
     const {id}=req.params
     const {name}=req.body
     try {
@@ -170,7 +170,7 @@ UserRouter.put("/update/:id",Auth,RoleBase(["Admin", "User"]), uploadFun.single(
 
 })
 
-UserRouter.delete("/delete/:id",Auth,RoleBase(["Admin", "User"]), async(req,res)=>{
+UserRouter.delete("/Delete/:id",Auth,RoleBase(["Admin", "User"]), async(req,res)=>{
     const {id}=req.params
     try {
         let UserData= await UserModel.findById(id)
