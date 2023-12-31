@@ -1,8 +1,8 @@
-                             # <h1 align="center" style="color: #5C6AC4;">User-Management</h1>
+<h1 align="center" style="color: #5C6AC4;">User-Management</h1>
 
 
 
-Built with Node.js, Express.js, and MongoDB, the backend ensures seamless communication between the frontend and the database. JWT adds a layer of security to user authentication.
+Built with Node.js, Express.js, and MongoDB, the backend ensures seamless communication between and the database. JWT adds a layer of security to user authentication.
 
 ## Table of Contents
 
