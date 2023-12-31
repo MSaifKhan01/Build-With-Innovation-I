@@ -161,7 +161,7 @@ Document the API endpoints and their functionalities.
   - `id` (String): User's ID.
 - **Response:**
   - `message` (String): Deletion success message.
-  - `DeletedData` (Object): Deleted user details.
+  - `DeletedData` (Object): Empty Object.
 
 #### 5. Get All Users
 
